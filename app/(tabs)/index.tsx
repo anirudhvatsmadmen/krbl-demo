@@ -200,7 +200,6 @@ export default function TripDetailScreen() {
     }, [])
   );
 
-
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
@@ -672,8 +671,8 @@ export default function TripDetailScreen() {
                           </Text>
                           <Text style={styles.subTitle}>{event?.subtitle}</Text>
                           <Text style={styles.subTitle}>
-                              {event?.description}
-                            </Text>
+                            {event?.description}
+                          </Text>
                         </View>
                         {getUser === "admin" && (
                           <View style={styles.editIcon}>

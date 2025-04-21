@@ -107,13 +107,21 @@ export default function DocumentUploadScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
+      let isActive = true;
+
       const fetchData = async () => {
-        const data = await dispatch(getDocument());
-        setUserDoc(data?.payload?.data);
+        const data: any = await dispatch(getDocument());
+        if (isActive) {
+          setUserDoc(data?.payload?.data);
+        }
       };
 
       fetchData();
-    }, [dispatch, modalVisible])
+
+      return () => {
+        isActive = false;
+      };
+    }, [dispatch])
   );
 
   const handleOpenDocument = async (url: string) => {

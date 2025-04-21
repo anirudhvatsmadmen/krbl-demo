@@ -34,10 +34,10 @@ const CreatePostNative = () => {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
+      quality: 1,
     });
 
     if (!result.canceled) {

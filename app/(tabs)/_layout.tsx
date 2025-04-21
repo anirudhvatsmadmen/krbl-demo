@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Tabs, useRouter } from "expo-router";
 import {
   Home,
@@ -25,6 +25,9 @@ export default function TabLayout() {
   const closeModal = () => {
     setModalVisible(false);
   };
+
+
+
   return (
     <>
       <Tabs
@@ -70,7 +73,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Event days",
-            tabBarLabel: "Days",
+            tabBarLabel: "Event",
             tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
           }}
         />
