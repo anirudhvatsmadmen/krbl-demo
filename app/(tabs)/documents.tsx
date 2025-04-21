@@ -266,8 +266,11 @@ export default function DocumentUploadScreen() {
 
               <TouchableOpacity
                 style={[
-                  styles.uploadButton,
-                  { marginTop: 20, backgroundColor: "#000" },
+                  styles.uploadButtonSubmit,
+                  {
+                    marginTop: 20,
+                    backgroundColor: "#000",
+                  },
                 ]}
                 onPress={confirmUpload}
               >
@@ -335,6 +338,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   uploadButton: {
+    marginTop: 30,
+    borderWidth: 1,
+    borderColor: "#fff",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "transparent",
+    position: "absolute",
+    bottom: 20,
+  },
+
+  uploadButtonSubmit: {
     marginTop: 30,
     borderWidth: 1,
     borderColor: "#fff",

@@ -20,7 +20,6 @@ const UserSavePost = () => {
   const [postData, setPostData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  console.log("userPost", postData);
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserProfile = async () => {

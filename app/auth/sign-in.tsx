@@ -51,7 +51,7 @@ const SignIn = () => {
         router.push("/");
       } else {
         // Alert.alert("Login Failed", resultAction.payload || "Try again");
-         console.log(resultAction, "resultAction")
+        console.log(resultAction, "resultAction");
         setAlertVisible(true);
         setAlertMessage("Invalid credentials");
       }

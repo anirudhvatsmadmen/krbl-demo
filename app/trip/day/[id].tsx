@@ -17,6 +17,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import { Plus } from "lucide-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EventDayPage = () => {
   const dispatch: any = useDispatch();
@@ -27,14 +28,13 @@ const EventDayPage = () => {
   const dayInfo = activityInfo?.data?.day;
   const activityData = activityInfo?.data?.activities;
   const { id: dayId, eventId } = useLocalSearchParams<any>();
+  const [getUser, setGetUSer] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(getActivity({ eventId, dayId } as any));
     }, [eventId, dayId])
   );
-
-  console.log("activityInfo", activityInfo);
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -45,6 +45,22 @@ const EventDayPage = () => {
     };
     return date.toLocaleDateString("en-US", options);
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkUser = async () => {
+        try {
+          const userData = await AsyncStorage.getItem("user");
+          const user: any = userData ? JSON.parse(userData) : null;
+          setGetUSer(user?.data.user.role);
+        } catch (error) {
+          console.error("Failed to load user:", error);
+        }
+      };
+
+      checkUser();
+    }, [])
+  );
 
   return (
     <>
@@ -90,71 +106,69 @@ const EventDayPage = () => {
           showsVerticalScrollIndicator={false}
         >
           {activityData?.map((item: any, index: number) => {
+            const CardWrapper: any = item?.coverPicture
+              ? ImageBackground
+              : View;
+            const cardProps = item?.coverPicture
+              ? {
+                  source: { uri: item.coverPicture },
+                  style: styles.cardBackgroundImage,
+                  imageStyle: { borderRadius: 10 },
+                }
+              : {
+                  style: [
+                    styles.cardBackgroundImage,
+                    { backgroundColor: "#00d5d5" },
+                  ],
+                };
+
             return (
               <Fragment key={index}>
-                {/* <Text style={styles.time}>08 AM</Text> */}
                 <Pressable
                   onPress={() =>
                     router.push({
                       pathname: `/trip/day/activity/${item._id}`,
                       params: { id: item._id },
-                    } as any)
+                    })
                   }
                 >
-                  {item?.coverPicture ? (
-                    <ImageBackground
-                      source={{ uri: item.coverPicture }}
-                      style={styles.cardBackground}
-                      imageStyle={{ borderRadius: 10 }}
-                    >
-                      <View style={styles.overlayContent}>
-                        <View style={styles.cardHeader}>
-                          <Text style={styles.cardTitle}>
-                            {item?.activityName}
-                          </Text>
-
-                          <Text style={styles.cardDesc}>
-                            {item?.description}
-                          </Text>
-                          {/* <Text style={styles.cardTime}>8.00 AM</Text> */}
-                          {/* <Text style={styles.cardDuration}>1h</Text> */}
-                        </View>
-                      </View>
-                    </ImageBackground>
-                  ) : (
-                    <View style={[styles.card, { backgroundColor: "#00d5d5" }]}>
+                  <CardWrapper {...cardProps}>
+                    <View style={styles.overlayContent}>
                       <View style={styles.cardHeader}>
                         <Text style={styles.cardTitle}>
                           {item?.activityName}
                         </Text>
                         <Text style={styles.cardDesc}>{item?.description}</Text>
-                        {/* <Text style={styles.cardTime}>8.00 AM</Text> */}
-                        {/* <Text style={styles.cardDuration}>1h</Text> */}
+                        {item?.activitySubtitle && (
+                          <Text style={styles.cardDesc}>
+                            {item?.activitySubtitle}
+                          </Text>
+                        )}
                       </View>
-                      <Text style={styles.cardDesc}>
-                        {item?.activitySubtitle}
-                      </Text>
                     </View>
-                  )}
+                  </CardWrapper>
                 </Pressable>
               </Fragment>
             );
           })}
         </ScrollView>
         {/* Floating "+" Button */}
-        <TouchableOpacity
-          style={styles.floatingButton}
-          onPress={() => {
-            router.push({
-              pathname: "/add-activity/page",
-              params: { id: dayId },
-            });
-          }}
-        >
-          <Text style={styles.floatingButtonText}>
-            <Plus color="#000" />
-          </Text>
-        </TouchableOpacity>
+
+        {getUser === "admin" && (
+          <TouchableOpacity
+            style={styles.floatingButton}
+            onPress={() => {
+              router.push({
+                pathname: "/add-activity/page",
+                params: { id: dayId },
+              });
+            }}
+          >
+            <Text style={styles.floatingButtonText}>
+              <Plus color="#000" />
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </>
   );
@@ -275,5 +289,15 @@ const styles = StyleSheet.create({
   },
 
   cardBackground: {},
+
+  cardBackgroundImage: {
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: "hidden",
+    justifyContent: "center",
+    padding: 12,
+  },
+
   overlayContent: {},
 });

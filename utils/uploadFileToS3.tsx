@@ -2,32 +2,24 @@ import { Platform } from "react-native";
 
 export const uploadFileToS3 = async (data: any) => {
   try {
-    // Create FormData object
     const formData = new FormData();
 
     if (Platform.OS === "web") {
-      // For web, directly append the file
       formData.append("file", data.file);
     } else {
-      // For Expo/React Native on mobile
-      // Extract the file information from the data
       const fileUri = data.uri;
-      const fileName = data.fileName || `image_${Date.now()}.jpg`;
-      const mimeType = data.mimeType || "image/jpeg";
+      const fileName = data.fileName || `file_${Date.now()}`;
+      const mimeType = data.mimeType || getMimeType(fileUri);
 
-      // Create the file object in the format expected by FormData and Expo
-      // The key is to include the correct uri, name, and type properties
       const fileObject = {
         uri: fileUri,
-        name: fileName,
+        name: fileNameWithExtension(fileName, mimeType),
         type: mimeType,
       };
 
-      // Append with 'file' key as expected by your server
       formData.append("file", fileObject as any);
     }
 
-    // Make the fetch request
     const response = await fetch(
       "https://krbl-backend.vercel.app/api/v1/event/upload",
       {
@@ -38,7 +30,6 @@ export const uploadFileToS3 = async (data: any) => {
 
     const responseText = await response.text();
 
-    // Parse the response safely
     let responseData;
     try {
       responseData = JSON.parse(responseText);
@@ -54,5 +45,36 @@ export const uploadFileToS3 = async (data: any) => {
   } catch (error) {
     console.error("Upload error:", error);
     throw error;
+  }
+};
+
+// ✅ Helper to determine MIME type based on URI
+const getMimeType = (uri: string): string => {
+  if (uri.endsWith(".pdf")) return "application/pdf";
+  if (uri.endsWith(".doc")) return "application/msword";
+  if (uri.endsWith(".docx"))
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (uri.endsWith(".png")) return "image/png";
+  if (uri.endsWith(".jpg") || uri.endsWith(".jpeg")) return "image/jpeg";
+  return "application/octet-stream"; // fallback
+};
+
+// ✅ Helper to ensure correct file name extension
+const fileNameWithExtension = (name: string, mimeType: string): string => {
+  if (name.includes(".")) return name;
+
+  switch (mimeType) {
+    case "application/pdf":
+      return `${name}.pdf`;
+    case "application/msword":
+      return `${name}.doc`;
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return `${name}.docx`;
+    case "image/png":
+      return `${name}.png`;
+    case "image/jpeg":
+      return `${name}.jpg`;
+    default:
+      return `${name}.bin`;
   }
 };

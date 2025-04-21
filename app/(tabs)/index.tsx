@@ -200,7 +200,6 @@ export default function TripDetailScreen() {
     }, [])
   );
 
-  console.log("eventData", eventData);
 
   const renderTabContent = () => {
     switch (activeTab) {
