@@ -2,7 +2,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
 // export const BASE_URL = "http://192.168.0.103:5000/api/v1";
-export const BASE_URL = "http://192.168.31.112:5000/api/v1";
+// export const BASE_URL = "http://192.168.31.112:5000/api/v1";
+export const BASE_URL = "https://krbl-backend.vercel.app/api/v1";
+
 
 export const config = async (contentType = "application/json", navigation) => {
   try {

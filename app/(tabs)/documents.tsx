@@ -76,6 +76,7 @@ export default function DocumentUploadScreen() {
         return;
       }
       setLoading(true);
+
       // Upload to S3
       const uploadedFileUrl = await uploadFileToS3(selectedFile);
 
@@ -91,10 +92,13 @@ export default function DocumentUploadScreen() {
       const payload = {
         documentName: selectedType,
         fileUrl: uploadedFileUrl,
-      } as any;
+      };
 
       // Dispatch to Redux or send to backend
-      dispatch(uploadDocument(payload));
+      await dispatch(uploadDocument(payload));
+
+      // Fetch updated documents after the upload
+      await dispatch(getDocument());
 
       setLoading(false);
       setModalVisible(false);
@@ -117,11 +121,7 @@ export default function DocumentUploadScreen() {
       };
 
       fetchData();
-
-      return () => {
-        isActive = false;
-      };
-    }, [dispatch])
+    }, [dispatch, modalVisible])
   );
 
   const handleOpenDocument = async (url: string) => {
